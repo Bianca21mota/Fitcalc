@@ -10,11 +10,17 @@
         },
          "files": [
             "Config/configuration.php"
+        ],
+         "classmap": [
+            "Controller/"
         ]
     },
     "minimum-stability": "dev",
     "require": {
         "php": ">= 8.0",
         "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "12"
     }
 }
