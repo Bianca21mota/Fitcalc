@@ -2,6 +2,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Model\Imcs;
 
 use Controller\ImcController;
 
@@ -11,10 +12,19 @@ class ImcTest extends TestCase {
     //RESPONSÁVEL POR REALIZAR A COMUNICAÇÃO COM O BD
     // E A LÓGICA DA APLICAÇÃO
     private $imcController;
+
+    // ATRIBUTO DO BD FAKE
+    private $mockImcModel;
+
     protected function setUp(): void {
-        $this->imcController = new ImcController();
+        //ACESSANDO O  ATRIBUTO (mockImcModel) QUE VAI RECEBER A FUNÇÃO CREATEMOCK
+        //Em vez de criar uma conexão com o bd real, ele cria o bd fake
+        $this->mockImcModel =$this-> createMock(Imcs::class);
+
+        //PASSO ESSE FAKE PARA O CONTROLLER , ASSIM ME PERMITE UTILIZAR 
+        // AS MESMAS FUNCIONALIDADES , SÓ QUE SEM MODIFICAR O BANCO DE DADOS REAL
+        $this->imcController = new ImcController($this->mockImcModel);
     }
-    
 
     // Verificar o cálculo do IMC
     #[\PHPUnit\Framework\Attributes\Test]
@@ -107,7 +117,7 @@ class ImcTest extends TestCase {
      $this->assertStringNotContainsString('Por favor, informe peso e altura para obter o seu IMC.', $imcResult['BMIrange']);
      $this-> assertEquals('Sobrepeso', $imcResult['BMIrange']);
 
-     //
+     
     }
 
   #[\PHPUnit\Framework\Attributes\Test]
@@ -145,17 +155,32 @@ class ImcTest extends TestCase {
      $this->assertStringNotContainsString('Por favor, informe peso e altura para obter o seu IMC.', $imcResult['BMIrange']);
      $this-> assertEquals('Obesidade grau III', $imcResult['BMIrange']);
 
-     //IMC = 
+     
 
     }
 
 
 
     //Salvar o imc
-    // #[\PHPUnit\Framework\Attributes\Test]
-    // public function it_should_be_able_to_salve_bmi(){
-        
-    // }
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_should_be_able_to_salve_bmi(){
+        //
+        $imcResult = $this -> imcController->calculateImc(68,1.68); 
+
+         $this->assertStringNotContainsString("Por favor, informe peso e altura para obter o seu IMC.", $imcResult['BMIrange']);
+
+         //quando eu usar pela 1 vez a função de criar, o phpunit deve verificar se os parametros tem os argumentos que eu quero e se a condição é verdadeira.
+         // verifica se o que esta sendo acessado no bd corresponde ao esperado
+         // espera que o metodo seja executado 1 vez e que os parametros correspondam com que foi passado e com o esperado
+         //Por fim, verifica se da pra salvar, e se essa condição é verdadeira
+         $this->mockImcModel ->expects($this->once())->method('createImc')->with($this->equalTo(68), $this->equalTo(1.68)) ->willReturn(true);
+
+        $result = $this->imcController->saveIMC(68,1.68, $imcResult['imc']);
+
+         $this->assertTrue($result);
+
+    }
+
 }
 
 ?>

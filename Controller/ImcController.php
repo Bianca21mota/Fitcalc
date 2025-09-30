@@ -8,11 +8,15 @@ use Exception;
 
 class ImcController
 {
+    //Lógica para pegar a estrutura (que será usada no bd fake) mas sem alterar o bd real.
     private $imcsModel;
 
-    public function __construct()
+    //$imcsModel argumento usdado em ImcTest, em vez de realizar a conexão com o bd real, vai ser usado para  a conexão com o bd fake
+    public function __construct( Imcs $imcsModel)
     {
-        $this->imcsModel = new Imcs();
+        //esta acessando e instanciando automaticamente
+        // e esta conectando automaticamente com o banco de dados fake
+        $this->imcsModel = $imcsModel;
     }
 
     // CALCULO E CLASSIFICAÇÃO 
