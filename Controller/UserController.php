@@ -11,7 +11,8 @@ class UserController
 
     public function __construct(User $userModel)
     {
-        $this->userModel = new User();
+        //         $this->userModel = new User();
+        $this->userModel = $userModel;
     }
     
 
